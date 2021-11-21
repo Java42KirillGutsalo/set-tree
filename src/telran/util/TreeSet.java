@@ -26,6 +26,20 @@ public class TreeSet<T> extends AbstractSet<T> {
 		this((Comparator<T>)Comparator.naturalOrder());
 	}
 	
+	private Node<T> getMostLeftFrom(Node<T> from) {
+		while(from.left != null) {
+			from = from.left;
+		}
+		return from;
+	}
+	
+	private Node<T> getFirstParentGreater(Node<T> node) {
+		while(node.parent != null && node.parent.left != node) {
+			node = node.parent;
+		}
+		return node.parent;
+	}
+	
 	private class TreeSetIterator implements Iterator<T> {
 	
 		Node<T> current = root == null ? root : getMostLeftFrom(root);
@@ -35,12 +49,7 @@ public class TreeSet<T> extends AbstractSet<T> {
 			return current != null;
 		}
 
-		private Node<T> getMostLeftFrom(Node<T> from) {
-			while(from.left != null) {
-				from = from.left;
-			}
-			return from;
-		}
+		
 
 		@Override
 		public T next() {
@@ -50,12 +59,7 @@ public class TreeSet<T> extends AbstractSet<T> {
 			return res;
 		}
 
-		private Node<T> getFirstParentGreater(Node<T> node) {
-			while(node.parent != null && node.parent.left != node) {
-				node = node.parent;
-			}
-			return node.parent;
-		}
+		
 		
 	}
 	
@@ -102,20 +106,72 @@ public class TreeSet<T> extends AbstractSet<T> {
 
 	@Override
 	public T remove(T pattern) {
-		// TODO Next HW
-		return null;
+		Node<T> removedNode = getNode(pattern);
+		if(removedNode == null) {
+			return null;
+		}
+		removeNode(removedNode);
+		return removedNode.obj;
+	}
+
+	private void removeNode(Node<T> removedNode) {
+		//TODO update the method by applying another algorithm
+		if(removedNode == root) {
+			removeRoot();
+		} else {
+			Node<T> parent = removedNode.parent;
+			Node<T> child = removedNode.right == null ? removedNode.left : removedNode.right;
+			if(parent.right == removedNode) {
+				parent.right = child;
+			} else {
+				parent.left = child;
+			}
+			if(child != null) {
+				child.parent = parent;
+			}
+			if(removedNode.right != null) {
+				Node<T> parentLeft = getMostLeftFrom(removedNode.right);
+				parentLeft.left = removedNode.left;
+				if(removedNode.left != null) {
+					removedNode.left.parent = parentLeft;
+				}
+			}
+		}
+		size--;
+	}
+
+	private void removeRoot() {
+		//TODO update the method by applying another algorithm
+		Node<T> child = root.right == null ? root.left : root.right;
+		if(child != null) {
+			child.parent = null;
+		}
+		if(root.right != null) {
+			Node<T> parentLeft = getMostLeftFrom(root.right);
+			parentLeft.left = root.left;
+			if(root.left != null) {
+				root.left.parent = parentLeft;
+			}
+		}
+		root = child;
+	}
+
+	private Node<T> getNode(T pattern) {
+		Node<T> current = root;
+		while(current != null && !current.obj.equals(pattern)) {
+			current = comp.compare(pattern, current.obj) > 0 ?
+					current.right : current.left;
+		}
+		return current;
 	}
 
 	@Override
 	public Iterator<T> iterator() {
-		
 		return new TreeSetIterator();
 	}
 	
 	@Override
 	public boolean contains(T pattern) {
-		
 		return getParent(pattern) == null;
 	}
-
 }
