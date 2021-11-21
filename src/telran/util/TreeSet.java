@@ -115,12 +115,39 @@ public class TreeSet<T> extends AbstractSet<T> {
 	}
 
 	private void removeNode(Node<T> removedNode) {
-		//TODO update the method by applying another algorithm
+		if(removedNode.left != null && removedNode.right != null) {
+			removeJunctionNode(removedNode);
+		} else {
+			removeNonJunctionNode(removedNode);
+		}
+		size--;
+	}
+
+	private void removeJunctionNode(Node<T> removedNode) {
+		Node<T> substitutionNode = getMostLeftFrom(removedNode.right);
+		removedNode.obj = substitutionNode.obj;
+		if(removedNode.right == substitutionNode) {
+			removedNode.right = substitutionNode.right;
+			if(removedNode.right != null) {
+				removedNode.right.parent = removedNode;
+			}
+		}
+		Node<T> parent = substitutionNode.parent;
+		if(parent != null && parent.right == substitutionNode) {
+			parent.right = null;
+		}
+		substitutionNode.parent = null;
+	}
+
+	private void removeNonJunctionNode(Node<T> removedNode) {
 		if(removedNode == root) {
-			removeRoot();
+			removedNode.parent =null;
+			root = removedNode.right == null ? removedNode.left :
+				removedNode.right;
 		} else {
 			Node<T> parent = removedNode.parent;
-			Node<T> child = removedNode.right == null ? removedNode.left : removedNode.right;
+			Node<T> child = removedNode.right == null ? removedNode.left :
+				removedNode.right;
 			if(parent.right == removedNode) {
 				parent.right = child;
 			} else {
@@ -129,15 +156,8 @@ public class TreeSet<T> extends AbstractSet<T> {
 			if(child != null) {
 				child.parent = parent;
 			}
-			if(removedNode.right != null) {
-				Node<T> parentLeft = getMostLeftFrom(removedNode.right);
-				parentLeft.left = removedNode.left;
-				if(removedNode.left != null) {
-					removedNode.left.parent = parentLeft;
-				}
-			}
 		}
-		size--;
+		
 	}
 
 	private void removeRoot() {
