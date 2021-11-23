@@ -41,8 +41,8 @@ public class TreeSet<T> extends AbstractSet<T> {
 	}
 	
 	private class TreeSetIterator implements Iterator<T> {
-	
 		Node<T> current = root == null ? root : getMostLeftFrom(root);
+		Node<T> previous = null;
 		@Override
 		public boolean hasNext() {
 			
@@ -54,13 +54,19 @@ public class TreeSet<T> extends AbstractSet<T> {
 		@Override
 		public T next() {
 			T res = current.obj;
+			previous = current;
 			current = current.right != null ? getMostLeftFrom(current.right) :
 				getFirstParentGreater(current);
 			return res;
 		}
-
 		
-		
+		@Override
+		public void remove() {
+			if(isJunction(previous)) {
+				current = previous;
+			}
+			removeNode(previous);
+		}
 	}
 	
 	@Override
@@ -115,45 +121,46 @@ public class TreeSet<T> extends AbstractSet<T> {
 	}
 
 	private void removeNode(Node<T> removedNode) {
-		//TODO update the method by applying another algorithm
-		if(removedNode == root) {
+		if (isJunction(removedNode)) {
+			removeJunction(removedNode);
+		} else if(removedNode == root) {
 			removeRoot();
 		} else {
-			Node<T> parent = removedNode.parent;
-			Node<T> child = removedNode.right == null ? removedNode.left : removedNode.right;
-			if(parent.right == removedNode) {
-				parent.right = child;
-			} else {
-				parent.left = child;
-			}
-			if(child != null) {
-				child.parent = parent;
-			}
-			if(removedNode.right != null) {
-				Node<T> parentLeft = getMostLeftFrom(removedNode.right);
-				parentLeft.left = removedNode.left;
-				if(removedNode.left != null) {
-					removedNode.left.parent = parentLeft;
-				}
-			}
+			removeNonJunction(removedNode);
 		}
 		size--;
 	}
 
-	private void removeRoot() {
-		//TODO update the method by applying another algorithm
-		Node<T> child = root.right == null ? root.left : root.right;
+	private boolean isJunction(Node<T> node) {
+		
+		return node.left != null && node.right != null;
+	}
+
+	private void removeJunction(Node<T> removedNode) {
+		Node<T> substitute = getMostLeftFrom(removedNode.right);
+		removedNode.obj = substitute.obj;
+		removeNonJunction(substitute);
+	}
+
+	private void removeNonJunction(Node<T> removedNode) {
+		Node<T> child = removedNode.right == null ? removedNode.left : removedNode.right;
+		Node<T> parent = removedNode.parent;
+		if(parent.right == removedNode) {
+			parent.right = child;
+		} else {
+			parent.left = child;
+		}
 		if(child != null) {
-			child.parent = null;
+			child.parent = parent;
 		}
-		if(root.right != null) {
-			Node<T> parentLeft = getMostLeftFrom(root.right);
-			parentLeft.left = root.left;
-			if(root.left != null) {
-				root.left.parent = parentLeft;
-			}
+		
+	}
+
+	private void removeRoot() {
+		root = root.right == null ? root.left : root.right;
+		if(root != null) {
+			root.parent = null;
 		}
-		root = child;
 	}
 
 	private Node<T> getNode(T pattern) {
