@@ -73,6 +73,11 @@ public class TreeSet<T> extends AbstractSet<T> {
 				current = previous;
 			}
 			removeNode(previous);
+			/* V.R.
+			 * It is necessary to add following
+			 *   previous = null;
+			 * It prevents the second call of remove() without next();   
+			 */
 		}
 	}
 	
