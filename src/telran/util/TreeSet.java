@@ -2,6 +2,7 @@ package telran.util;
 
 import java.util.Comparator;
 import java.util.Iterator;
+import java.util.NoSuchElementException;
 
 public class TreeSet<T> extends AbstractSet<T> {
 	private static class Node<T> {
@@ -53,6 +54,9 @@ public class TreeSet<T> extends AbstractSet<T> {
 
 		@Override
 		public T next() {
+			if(current == null) {
+				throw new NoSuchElementException();
+			}
 			T res = current.obj;
 			previous = current;
 			current = current.right != null ? getMostLeftFrom(current.right) :
@@ -62,6 +66,9 @@ public class TreeSet<T> extends AbstractSet<T> {
 		
 		@Override
 		public void remove() {
+			if(previous == null) {
+				throw new IllegalStateException();
+			}
 			if(isJunction(previous)) {
 				current = previous;
 			}
