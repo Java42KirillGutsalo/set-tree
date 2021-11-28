@@ -55,7 +55,7 @@ public class TreeSet<T> extends AbstractSet<T> {
 		@Override
 		public T next() {
 			if(current == null) {
-				throw new NoSuchElementException();
+				noSuchElementException();
 			}
 			T res = current.obj;
 			previous = current;
@@ -67,12 +67,13 @@ public class TreeSet<T> extends AbstractSet<T> {
 		@Override
 		public void remove() {
 			if(previous == null) {
-				throw new IllegalStateException();
+				illegalStateException();
 			}
 			if(isJunction(previous)) {
 				current = previous;
 			}
 			removeNode(previous);
+			previous = null;
 		}
 	}
 	
