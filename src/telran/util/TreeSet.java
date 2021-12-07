@@ -2,9 +2,6 @@ package telran.util;
 
 import java.util.Comparator;
 import java.util.Iterator;
-import java.util.NoSuchElementException;
-
-import javax.swing.text.Highlighter.Highlight;
 
 public class TreeSet<T> extends AbstractSet<T> {
 	private static class Node<T> {
@@ -234,14 +231,32 @@ public class TreeSet<T> extends AbstractSet<T> {
 	
 	public int sumOfMaxBranch() {
 		if(root.obj instanceof Integer) {
-			//TODO
-			//Perform casting to Integer for computing sum
-			return 0;
+			return sumOfMaxBranch(root);
 		}
 		return -1;
 	}
 	
+	private int sumOfMaxBranch(Node<T> rootTmp) {
+		if(rootTmp == null) {
+			return 0;
+		}
+		int numLeft = sumOfMaxBranch(rootTmp.left);
+		int numRight = sumOfMaxBranch(rootTmp.right);
+		return Math.max(numLeft, numRight) + ((Integer)rootTmp.obj).intValue();
+	}
+
 	public void displayTreeFileSystem() {
-		//TODO display tree in the form of slide #39
+		displayRoot(0, root);
+		displayTreeFileSystem(0, root);
+	}
+
+	private void displayTreeFileSystem(int level, Node<T> rootTmp) {
+		if(rootTmp != null) {
+			displayTreeFileSystem(level + 1, rootTmp.right);
+			if(rootTmp != root) {
+				displayRoot(level, rootTmp);
+			}
+			displayTreeFileSystem(level + 1, rootTmp.left);
+		}
 	}
 }

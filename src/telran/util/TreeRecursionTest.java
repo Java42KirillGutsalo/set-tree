@@ -33,6 +33,10 @@ TreeSet<Integer> tree;
 	@Test
 	void displayTreeTest() {
 		tree.displayTree();
+		System.out.println("==============");
+		getTreeForTest().displayTree();
+		System.out.println("==============");
+		tree.displayTreeFileSystem();
 	}
 	
 	@Test
@@ -42,7 +46,15 @@ TreeSet<Integer> tree;
 	}
 
 	private TreeSet<Integer> getTreeForTest() {
-		// TODO create tree on the slide #38
-		return null;
+		TreeSet<Integer> treeSet = new TreeSet<>((a, b) -> getSum(a) - getSum(b));
+		int array[] = {4, 6, 5, 7, 11, 21};
+		for(int a: array) {
+			treeSet.add(a);
+		}
+		return treeSet;
+	}
+
+	private int getSum(int a) {
+			return a != 0 ? (a % 10) + getSum(a / 10) : 0;	
 	}
 }
