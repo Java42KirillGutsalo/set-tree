@@ -4,6 +4,8 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
+import javax.swing.text.Highlighter.Highlight;
+
 public class TreeSet<T> extends AbstractSet<T> {
 	private static class Node<T> {
 		T obj;
@@ -14,6 +16,8 @@ public class TreeSet<T> extends AbstractSet<T> {
 			this.obj = obj;
 		}
 	}
+
+	private static final int SPACE_LEVEL = 3;
 	
 	private Node<T> root;
 	private Comparator<T> comp;
@@ -41,7 +45,7 @@ public class TreeSet<T> extends AbstractSet<T> {
 		return node.parent;
 	}
 	
-	private class TreeSetIterator implements Iterator<T> {
+	private class TreeSetIterator extends AbstractIterator<T> {
 		Node<T> current = root == null ? root : getMostLeftFrom(root);
 		Node<T> previous = null;
 		@Override
@@ -53,10 +57,7 @@ public class TreeSet<T> extends AbstractSet<T> {
 		
 
 		@Override
-		public T next() {
-			if(current == null) {
-				noSuchElementException();
-			}
+		protected T nextObject() {
 			T res = current.obj;
 			previous = current;
 			current = current.right != null ? getMostLeftFrom(current.right) :
@@ -65,10 +66,7 @@ public class TreeSet<T> extends AbstractSet<T> {
 		}
 		
 		@Override
-		public void remove() {
-			if(previous == null) {
-				illegalStateException();
-			}
+		protected void removeObject() {
 			if(isJunction(previous)) {
 				current = previous;
 			}
@@ -188,5 +186,62 @@ public class TreeSet<T> extends AbstractSet<T> {
 	@Override
 	public boolean contains(T pattern) {
 		return getParent(pattern) == null;
+	}
+
+	public int width() {
+		return width(root);
+	}
+
+	private int width(Node<T> rootTmp) {
+		if(rootTmp == null) {
+			return 0;
+		}
+		if(rootTmp.left == null && rootTmp.right == null) {
+			return 1;
+		}
+		return width(rootTmp.left) + width(rootTmp.right);
+	}
+
+	public int height() {
+		return height(root);
+	}
+
+	private int height(Node<T> rootTmp) {
+		if(rootTmp == null) {
+			return 0;
+		}
+		int hl = height(rootTmp.left);
+		int hr = height(rootTmp.right);
+		return 1 + Math.max(hl, hr);
+	}
+	
+	void displayTree() {
+		displayTree(0, root);
+		}
+
+	private void displayTree(int level, Node<T> rootTmp) {
+		if(rootTmp != null) {
+			displayTree(level + 1, rootTmp.right);
+			displayRoot(level, rootTmp);
+			displayTree(level + 1, rootTmp.left);
+		}
+	}
+
+	private void displayRoot(int level, Node<T> rootTmp) {
+		System.out.print(" ".repeat(level * SPACE_LEVEL));
+		System.out.println(rootTmp.obj);
+	}
+	
+	public int sumOfMaxBranch() {
+		if(root.obj instanceof Integer) {
+			//TODO
+			//Perform casting to Integer for computing sum
+			return 0;
+		}
+		return -1;
+	}
+	
+	public void displayTreeFileSystem() {
+		//TODO display tree in the form of slide #39
 	}
 }
