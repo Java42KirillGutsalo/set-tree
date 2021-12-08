@@ -45,6 +45,7 @@ TreeSet<Integer> tree;
 		assertEquals(36, tree1.sumOfMaxBranch());
 	}
 
+	// V.R. OK
 	private TreeSet<Integer> getTreeForTest() {
 		TreeSet<Integer> treeSet = new TreeSet<>((a, b) -> getSum(a) - getSum(b));
 		int array[] = {4, 6, 5, 7, 11, 21};

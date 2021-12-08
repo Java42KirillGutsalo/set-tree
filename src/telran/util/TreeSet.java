@@ -223,12 +223,12 @@ public class TreeSet<T> extends AbstractSet<T> {
 			displayTree(level + 1, rootTmp.left);
 		}
 	}
-
 	private void displayRoot(int level, Node<T> rootTmp) {
 		System.out.print(" ".repeat(level * SPACE_LEVEL));
 		System.out.println(rootTmp.obj);
 	}
 	
+	// V.R. OK
 	public int sumOfMaxBranch() {
 		if(root.obj instanceof Integer) {
 			return sumOfMaxBranch(root);
@@ -245,6 +245,7 @@ public class TreeSet<T> extends AbstractSet<T> {
 		return Math.max(numLeft, numRight) + ((Integer)rootTmp.obj).intValue();
 	}
 
+	// V.R. OK
 	public void displayTreeFileSystem() {
 		displayRoot(0, root);
 		displayTreeFileSystem(0, root);
