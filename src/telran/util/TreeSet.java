@@ -1,5 +1,6 @@
 package telran.util;
 
+import java.security.DrbgParameters.Reseed;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
@@ -234,14 +235,24 @@ public class TreeSet<T> extends AbstractSet<T> {
 	
 	public int sumOfMaxBranch() {
 		if(root.obj instanceof Integer) {
-			//TODO
-			//Perform casting to Integer for computing sum
-			return 0;
+			return sumOfMaxBranch(root);
 		}
 		return -1;
 	}
 	
+	private int sumOfMaxBranch(Node<T> rootTmp) {
+		int res = 0;
+		if(rootTmp != null) {
+			int leftSum = sumOfMaxBranch(rootTmp.left);
+			int rightSum = sumOfMaxBranch(rootTmp.right);
+			res = Math.max(leftSum, rightSum) + (Integer)rootTmp.obj;
+		}
+		return res;
+	}
+
 	public void displayTreeFileSystem() {
-		//TODO display tree in the form of slide #39
+		displayTree(0, root);
+		displayTree(1, root.right);
+		displayTree(1, root.left);
 	}
 }
